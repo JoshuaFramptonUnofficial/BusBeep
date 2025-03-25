@@ -36,9 +36,8 @@ function calculateDistance(latitude1,longitude1,latitude2,longitude2)
 function triggerAlert()
 {
     let alertSound = new Audio('audio.mp3');
-    alert("You have entered the location radius, please get off your bus effective imediately or else!!!");
     alertSound.play();
-
+    alert("You have entered the location radius, please get off your bus effective imediately or else!!!");
 }
 function getLocation() { 
     
