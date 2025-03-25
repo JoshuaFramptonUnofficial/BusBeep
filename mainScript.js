@@ -37,6 +37,7 @@ function triggerAlert()
 {
     let alertSound = new Audio('audio.mp3');
     alertSound.play();
+    alert("You have entered the location radius, please get off your bus effective imediately or else!!!");
 }
 function getLocation() { 
     
@@ -148,8 +149,9 @@ async function startup() { //this subroutine happens at the start to initialise 
     placePicker.addEventListener('gmpx-placechange', function ()
 	{
         const place = placePicker.value;
+		const location = Place.location;
 
-        if (!place.location) {
+        if (!location) {
             window.alert("No details available for input: '" + place.name + "'");
             infowindow.close();
             marker.position = null;
@@ -157,14 +159,14 @@ async function startup() { //this subroutine happens at the start to initialise 
             return;
         }
 
-        map.center = place.location;
+        map.center = location;
         if(marker == null || marker == undefined)
         {
-            marker = createMarker(place.location, 'CIRCLE', 'red', 7)
+            marker = createMarker(location, 'CIRCLE', 'red', 7)
         }
         else 
         {
-            marker.setPosition(place.location)
+            marker.setPosition(location)
         }
         
         //turns location into readbale adress for info box
@@ -177,8 +179,8 @@ async function startup() { //this subroutine happens at the start to initialise 
         selectedPlace = {
             name: place.displayName,
             address: place.formattedAddress,
-            lat: place.location.lat(),
-            lng: place.location.lng(),
+            lat: location.lat(),
+            lng: location.lng(),
         };
 
         const radiusInput = document.getElementById("radius-input");
@@ -198,7 +200,7 @@ async function startup() { //this subroutine happens at the start to initialise 
             strokeColor: '#FFFFFF',
             strokeOpacity: 0.6,
             strokeWeight: 4,
-            center: place.location
+            center: location
         });
     });
 
