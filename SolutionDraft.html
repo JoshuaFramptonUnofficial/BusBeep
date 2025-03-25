@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BusBing - Bus Stop Tracker App</title>
+    <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library"></script>
+    <gmpx-api-loader key="AIzaSyDnFUPIUS-LBe6a5AeEmbCENx56DPr44Mw" solution-channel="GMP_CCS_autocomplete_v4">
+    </gmpx-api-loader>
+    <style> 
+        gmp-map 
+        { /*map Box */
+            height: 500px;
+        }
+        html, body 
+        {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #title 
+        {
+            color: #fff;
+            background-color: #4d90fe;
+            font-size: 25px;
+            font-weight: 500;
+            padding: 6px 12px;
+        }
+        .pac-card 
+        { /* search & radius */
+            background-color: #fff;
+            border-radius: 2px;
+            box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+            font: 400 18px Roboto, Arial, sans-serif;
+            overflow: hidden;
+        }
+        #place-picker 
+        { /*search rectangle*/
+            box-sizing: border-box;
+            width: 100%;
+            padding: 0.5rem 1rem 1rem;
+        }
+        #radius-input-container 
+        { 
+            display: flex;
+            align-items: center;
+            padding: 0 1rem 1rem;
+        }
+        #radius-input-label 
+        {
+            margin-right: 0.5rem;
+        }
+        #radius-input 
+        { 
+            width: 50px;
+        }
+        #location-tracking-text 
+        {
+            display: none; /* hidden at first */
+            font-weight: bold; /* makes text stand out */
+        }
+    </style>
+</head>
+<body>
+    <h1>Bus-stop Finder</h1>
+    <hr>
+    <p>Use the area below to find a bus-stop you want to track</p>
+    <hr>
+    <!--bellow map snippet from google maps API webpage-->
+    <gmp-map id="map" center="53.79951032401113, -1.5480014734824878" zoom="13" map-id="DEMO_MAP_ID"> <!-- map element provided by the extended conponent library -->
+        <div slot="control-block-start-inline-start" class="pac-card" id="pac-card">
+            <div>
+                <div id="title">Bus Alert Location Search</div> 
+                <gmpx-place-picker id="place-picker" for-map="map"></gmpx-place-picker> <!-- place search box-->
+                <div id="radius-input-container"> <!-- Is where the radius input field goes -->
+                    <label for="radius-input" id="radius-input-label">Radius (m):</label>
+                    <input type="number" id="radius-input" value="300">
+                </div>
+                <button type="button" id="setLocation"> <!-- set location button -->
+                    <span id="setLocationText">Track Location</span>
+                </button>
+            </div>
+        </div>
+        <gmp-advanced-marker id="marker"></gmp-advanced-marker> <!-- marker for location-->
+    </gmp-map>
+    <script src="mainScript.js"></script>
+</body>
+</html>
