@@ -37,7 +37,6 @@ function triggerAlert()
 {
     let alertSound = new Audio('audio.mp3');
     alertSound.play();
-    alert("You have entered the location radius, please get off your bus effective imediately or else!!!");
 }
 function getLocation() { 
     
