@@ -1,0 +1,66 @@
+gmp-map 
+{ /*map Box */
+	height: 500px;
+}
+
+html, body 
+{
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#title 
+{
+	color: #fff;
+	background-color: #4d90fe;
+	font-family: Verdana, sans-serif;
+	font-size: 25px;
+	font-weight: 500;
+	padding: 6px 12px;
+}
+
+.pac-card 
+{ /* search & radius */
+	background-color: #fff;
+	border-radius: 2px;
+	box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+	margin: 10px;
+	font: 400 18px Roboto, Arial, sans-serif;
+	overflow: hidden;
+}
+
+#place-picker 
+{ /*search rectangle*/
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.5rem 1rem 1rem;
+}
+
+#radius-input-container 
+{ 
+	display: flex;
+	align-items: center;
+	padding: 0 1rem 1rem;
+}
+
+#radius-input-label 
+{
+	margin-right: 0.5rem;
+}
+
+#radius-input 
+{ 
+	width: 50px;
+}
+
+p
+{
+	font-family: Verdana, sans-serif;
+}
+
+#logo
+{
+	width: 20%;
+}
