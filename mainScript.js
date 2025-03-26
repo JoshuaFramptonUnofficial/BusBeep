@@ -216,7 +216,7 @@ async function startup() { //this subroutine happens at the start to initialise 
             {
                 circle.setMap(null);
             }
-			ButtonText.innerHTML = "Stop Tracking";
+			ButtonText.innerHTML = "Track Location";
         } 
 		else { //if location not being tracked
             if (selectedPlace) 
@@ -248,7 +248,7 @@ async function startup() { //this subroutine happens at the start to initialise 
                 console.log("Updated Circle Radius:", newRadius);
                 alert(`Your location has been set to '${selectedPlace.name}'.`);
             }
-
+			ButtonText.innerHTML = "Location Tracking";
             getLocation();
         }
         // At the end of the place picker event listener:
