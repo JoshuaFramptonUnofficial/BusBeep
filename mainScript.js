@@ -7,6 +7,7 @@ let circle; // radius around location
 let map; //gmp-map ref
 let watchId = null; // an id returned by navigator.Geolocation.watchPosition to let the program stop watching when button pressed again
 let selectedPlace = null; // object holding location info
+const ButtonText = document.getElementById("setLocation")
 
 
 function toRadians(degrees)
@@ -57,7 +58,7 @@ function getLocation() {
     }
     else 
     {
-        document.getElementById("setLocation").innerHTML = "Your browser doesn't support location tracking, please use a location enabled browser";
+        ButtonText.innerHTML = "Your browser doesn't support location tracking, please use a location enabled browser";
 		//error message so people know why their tracking isnt working
     }
 }
@@ -135,7 +136,7 @@ function showError(error) { //this subroutine handles errors, modified version o
         default:
             errorMessage = "Error getting location.";
     }
-    document.getElementById("setLocation").innerHTML=errorMessage;
+    ButtonText.innerHTML=errorMessage;
 }
 
 async function startup() { //this subroutine happens at the start to initialise the main stuff
@@ -145,15 +146,15 @@ async function startup() { //this subroutine happens at the start to initialise 
     infowindow = new google.maps.InfoWindow(); //initialising info window earlier on, keeps code simpler
 
     // Place Picker Event Listener
-    placePicker.addEventListener('gmpx-placechange', function ()
+    placePicker.addEventListener('gmpx-placechange', function (e)
 	{
-        const place = placePicker.value;
+        const place = e.value;
 
 		console.log("Selected place object:", place);
         if (!place || !place.location) {
-            window.alert("No details available for input: '" + place.name + "'");
+            window.alert("No details available for input: '" (place ? place.displayName : '') + "'");
             infowindow.close();
-            marker.position = null;
+			if (marker) marker.setPosition(null);
             if (circle) circle.setMap(null);
             return;
         }
@@ -203,21 +204,21 @@ async function startup() { //this subroutine happens at the start to initialise 
         });
     });
 
-    const setLocationBtn = document.getElementById("setLocation");
 
     setLocationBtn.addEventListener('click', () => {
         if (watchId !== null) { //if location being tracked
             navigator.geolocation.clearWatch(watchId);
             watchId = null;
-            setLocationText.style.display = "inline";
-            locationTrackingButtonText.style.display = "none";
+            ButtonText.style.display = "inline";
 
             //if (userLocationMarker) userLocationMarker.setMap(null);  //this was creating an issue where when i set another location, my original marker would disapear
             if (circle) 
             {
                 circle.setMap(null);
             }
-        } else { //if location not being tracked
+			ButtonText.innerHTML = "Stop Tracking";
+        } 
+		else { //if location not being tracked
             if (selectedPlace) 
             {
 
