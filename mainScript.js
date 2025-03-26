@@ -7,7 +7,6 @@ let circle; // radius around location
 let map; //gmp-map ref
 let watchId = null; // an id returned by navigator.Geolocation.watchPosition to let the program stop watching when button pressed again
 let selectedPlace = null; // object holding location info
-const ButtonText = document.getElementById("setLocation")
 
 
 function toRadians(degrees)
@@ -58,7 +57,7 @@ function getLocation() {
     }
     else 
     {
-        ButtonText.innerHTML = "Your browser doesn't support location tracking, please use a location enabled browser";
+        document.getElementById("setLocation").innerHTML = "Your browser doesn't support location tracking, please use a location enabled browser";
 		//error message so people know why their tracking isnt working
     }
 }
@@ -136,7 +135,7 @@ function showError(error) { //this subroutine handles errors, modified version o
         default:
             errorMessage = "Error getting location.";
     }
-    ButtonText.innerHTML=errorMessage;
+    document.getElementById("setLocation").innerHTML=errorMessage;
 }
 
 async function startup() { //this subroutine happens at the start to initialise the main stuff
@@ -204,21 +203,21 @@ async function startup() { //this subroutine happens at the start to initialise 
         });
     });
 
+    const setLocationBtn = document.getElementById("setLocation");
 
     setLocationBtn.addEventListener('click', () => {
         if (watchId !== null) { //if location being tracked
             navigator.geolocation.clearWatch(watchId);
             watchId = null;
-            ButtonText.style.display = "inline";
+            setLocationText.style.display = "inline";
+            locationTrackingButtonText.style.display = "none";
 
             //if (userLocationMarker) userLocationMarker.setMap(null);  //this was creating an issue where when i set another location, my original marker would disapear
             if (circle) 
             {
                 circle.setMap(null);
             }
-			ButtonText.innerHTML = "Track Location";
-        } 
-		else { //if location not being tracked
+        } else { //if location not being tracked
             if (selectedPlace) 
             {
 
@@ -248,7 +247,7 @@ async function startup() { //this subroutine happens at the start to initialise 
                 console.log("Updated Circle Radius:", newRadius);
                 alert(`Your location has been set to '${selectedPlace.name}'.`);
             }
-			ButtonText.innerHTML = "Location Tracking";
+
             getLocation();
         }
         // At the end of the place picker event listener:
