@@ -37,7 +37,6 @@ function triggerAlert()
 {
     let alertSound = new Audio('audio.mp3');
     alertSound.play();
-    alert("You have entered the location radius, please get off your bus effective imediately or else!!!");
 }
 function getLocation() { 
     
@@ -149,9 +148,9 @@ async function startup() { //this subroutine happens at the start to initialise 
     placePicker.addEventListener('gmpx-placechange', function ()
 	{
         const place = placePicker.value;
-		const location = Place.location;
 
-        if (!location) {
+
+        if (!place.place.location) {
             window.alert("No details available for input: '" + place.name + "'");
             infowindow.close();
             marker.position = null;
@@ -159,14 +158,14 @@ async function startup() { //this subroutine happens at the start to initialise 
             return;
         }
 
-        map.center = location;
+        map.center = place.location;
         if(marker == null || marker == undefined)
         {
-            marker = createMarker(location, 'CIRCLE', 'red', 7)
+            marker = createMarker(place.location, 'CIRCLE', 'red', 7)
         }
         else 
         {
-            marker.setPosition(location)
+            marker.setPosition(place.location)
         }
         
         //turns location into readbale adress for info box
@@ -179,8 +178,8 @@ async function startup() { //this subroutine happens at the start to initialise 
         selectedPlace = {
             name: place.displayName,
             address: place.formattedAddress,
-            lat: location.lat(),
-            lng: location.lng(),
+            lat: place.location.lat(),
+            lng: place.location.lng(),
         };
 
         const radiusInput = document.getElementById("radius-input");
@@ -200,7 +199,7 @@ async function startup() { //this subroutine happens at the start to initialise 
             strokeColor: '#FFFFFF',
             strokeOpacity: 0.6,
             strokeWeight: 4,
-            center: location
+            center: place.location
         });
     });
 
