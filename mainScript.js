@@ -150,7 +150,7 @@ async function startup() { //this subroutine happens at the start to initialise 
         const place = placePicker.value;
 
 
-        if (!place.place.location) {
+        if (!place.location) {
             window.alert("No details available for input: '" + place.name + "'");
             infowindow.close();
             marker.position = null;
