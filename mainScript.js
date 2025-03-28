@@ -145,13 +145,13 @@ async function startup() { //this subroutine happens at the start to initialise 
     infowindow = new google.maps.InfoWindow(); //initialising info window earlier on, keeps code simpler
 
     // Place Picker Event Listener
-    placePicker.addEventListener('gmpx-placechange', function (e)
+    placePicker.addEventListener('gmpx-placechange', function ()
 	{
-        const place = e.value;
+        const place = placePicker.value;
 
 		console.log("Selected place object:", place);
         if (!place || !place.location) {
-            window.alert("No details available for input: '" (place ? place.displayName : '') + "'");
+            window.alert("No details available for input:"+ place.name);
             infowindow.close();
 			if (marker) marker.setPosition(null);
             if (circle) circle.setMap(null);
