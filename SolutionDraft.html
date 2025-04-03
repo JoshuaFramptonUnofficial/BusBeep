@@ -7,6 +7,7 @@
     <gmpx-api-loader key="AIzaSyDnFUPIUS-LBe6a5AeEmbCENx56DPr44Mw" solution-channel="GMP_CCS_autocomplete_v4">
     </gmpx-api-loader>
     <link rel="stylesheet" href="styles.css">
+	<script src="mainScript.js"></script>
 	<link rel="icon" href="icon.ico">
 </head>
 <body>
@@ -23,14 +24,49 @@
                 <div id="radius-input-container"> <!-- Is where the radius input field goes -->
                     <label for="radius-input" id="radius-input-label">Radius (m):</label>
                     <input type="number" id="radius-input" value="300">
+					<button id="save">💾</button>
                 </div>
-                <button type="button" id="setLocation"> <!-- set location button -->
-                    <span id="setLocationText">Track Location</span>
-                </button>
+                <button type="button" id="setLocation">Set Location</button>
+				<button type="button" id="upload">Upload Favourites</button>
+				<button type="button" id="fav">Save Favourites</button>
+				
             </div>
         </div>
         <gmp-advanced-marker id="marker"></gmp-advanced-marker> <!-- marker for location-->
     </gmp-map>
-    <script src="mainScript.js"></script>
+	<table>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Location</th>
+			<th scope="col">Selected</th>
+		</tr>
+		<tr>
+			<td id="location1"></td>
+			<td id="coords1"></td>
+			<td><button type="button" id="selected1">Select</button><td>
+		</tr>
+		<tr>
+			<td id="location2"></td>
+			<td id="coords2"></td>
+			<td><button type="button" id="selected2">Select</button><td>
+		</tr>
+		<tr>
+			<td id="location3"></td>
+			<td id="coords3"></td>
+			<td><button type="button" id="selected3">Select</button><td>
+		</tr>
+		<tr>
+			<td id="location4"></td>
+			<td id="coords4"></td>
+			<td><button type="button" id="selected4">Select</button><td>
+			
+		</tr>
+		<tr>
+			<td id="location5"></td>
+			<td id="coords5"></td>
+			<td><button type="button" id="selected5">Select</button><td>
+		</tr>
+	</table>
+
 </body>
 </html>

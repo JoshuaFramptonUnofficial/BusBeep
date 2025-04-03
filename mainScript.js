@@ -1,117 +1,112 @@
-//I have documented the following code to help whoever is reading this my thought process and to help them understand how it all works
+// I have documented the following code to help whoever is reading this understand my thought process
 
-let marker; // selected place
-let userLocationMarker; // user location
-let infowindow; // pop-up box above market
-let circle; // radius around location
-let map; //gmp-map ref
-let watchId = null; // an id returned by navigator.Geolocation.watchPosition to let the program stop watching when button pressed again
+let marker; // selected place marker
+let userLocationMarker; // user location marker
+let infoWindow; // pop-up box above marker
+let circle; // circle around location
+let map; // gmp-map ref
+let watchId = null; // id from navigator.geolocation.watchPosition to stop tracking
 let selectedPlace = null; // object holding location info
 
+// the location rows in grid
+let location1;
+let location2;
+let location3;
+let location4;
+let location5;
+let coords1;
+let coords2;
+let coords3;
+let coords4;
+let coords5;
 
-function toRadians(degrees)
-{
-    let rads = degrees*(Math.PI / 180);
-    return rads;
+function toRadians(degrees) {
+    return degrees * (Math.PI / 180);
 }
 
-function calculateDistance(latitude1,longitude1,latitude2,longitude2)
-{ 
-    const earthRadius = 6371000; //earths radius in meters
+function calculateDistance(latitude1, longitude1, latitude2, longitude2) { 
+    const earthRadius = 6371000; // earth's radius in meters
     const phi1 = toRadians(latitude1);
     const phi2 = toRadians(latitude2);
     const changePhi = toRadians(latitude2 - latitude1);
     const changeLambda = toRadians(longitude2 - longitude1);
 
-    let partA = Math.sin(changePhi/2) * Math.sin(changePhi / 2)
-    let partB = partA + Math.cos(phi1) * Math.cos(phi2) * Math.sin(changeLambda /2) * Math.sin(changeLambda / 2);
-    let partC = 2 * Math.atan2(Math.sqrt(partB), Math.sqrt(1 - partB));
-    let distance = earthRadius * partC; //distance in meters
-    if(distance>6371000)
-    {
-        console.log("Error present with location converter"); //used to tell if all conversion was working fine
+    const a = Math.sin(changePhi / 2) * Math.sin(changePhi / 2) +
+              Math.cos(phi1) * Math.cos(phi2) *
+              Math.sin(changeLambda / 2) * Math.sin(changeLambda / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = earthRadius * c; // distance in meters
+    if (distance > 6371000) {
+        console.log("Error present with location converter");
     }
     return distance;
 }
-function triggerAlert()
-{
+
+function triggerAlert() {
     let alertSound = new Audio('audio.mp3');
     alertSound.play();
 }
+
 function getLocation() { 
-    
-    //checks if the users browser supports geolocation (glorified gps detector)
-    if (navigator.geolocation) 
-    {
-        
-        if (watchId !== null)
-        {
-            navigator.geolocation.clearWatch(watchId); //clears watch ID 
+    // Check if the browser supports geolocation
+    if (navigator.geolocation) {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId); // clear existing watch
         }
-        watchId = navigator.geolocation.watchPosition(showPosition, showError, 
-        {
+        watchId = navigator.geolocation.watchPosition(showPosition, showError, {
             enableHighAccuracy: true, 
             maximumAge: 2000, 
-            timeout: 5000 // after experimenting with different timeout values, i find that 5000 ms is the best balance between accuracy and performance/data usage.
+            timeout: 5000 // balance between accuracy and performance
         });
-    }
-    else 
-    {
-        document.getElementById("setLocation").innerHTML = "Your browser doesn't support location tracking, please use a location enabled browser";
-		//error message so people know why their tracking isnt working
+    } else {
+        document.getElementById("setLocation").innerHTML = 
+          "Your browser doesn't support location tracking, please use a location-enabled browser";
     }
 }
 
 function showPosition(position) {
     const radiusInput = document.getElementById("radius-input");
     const alertRadius = parseInt(radiusInput.value);
-    let distance=0;
-
-    const currentCoords = 
-    { 
+    const currentCoords = { 
         lat: position.coords.latitude, 
         lng: position.coords.longitude
     };
-    // create or update user location marker
-    if (!userLocationMarker) 
-    {
-        userLocationMarker = createMarker(currentCoords, 'FORWARD_CLOSED_ARROW', 'blue', 4)
+
+    // Create or update user location marker
+    if (!userLocationMarker) {
+        userLocationMarker = createMarker(currentCoords, 'FORWARD_CLOSED_ARROW', 'blue', 4);
     } else { 
         userLocationMarker.setPosition(currentCoords);
     }
     
-    const infoContent = 
-    `
+    const infoContent = `
         <div>
             <strong>Current Location</strong><br>
             Lat: ${currentCoords.lat.toFixed(6)}<br>
             Lng: ${currentCoords.lng.toFixed(6)}
-        </div> 
-    `;// at first, the info content was imediately displayed, but then i changed it to save the content to a variable before displaying it for flexibility and allowing it to be easilly editted in the future
-    infowindow.setContent(infoContent);
-    infowindow.open(map.innerMap, userLocationMarker);
+        </div>
+    `;
+    infoWindow.setContent(infoContent);
+    infoWindow.open(map.innerMap, userLocationMarker);
 
     console.log("User location updated to:", currentCoords);
 
-    if(selectedPlace)
-    {
-        console.log("Current Coordinates:", currentCoords.lat, currentCoords.lng);
-        console.log("Selected Place Coordinates:", selectedPlace.lat, selectedPlace.lng);
-        distance = calculateDistance(currentCoords.lat,currentCoords.lng,selectedPlace.lat,selectedPlace.lng);
-        console.log("Distance to location:",distance, "meters")
-        if(distance<= alertRadius)
-            {
-                triggerAlert();
-            }
+    if (selectedPlace) {
+        const distance = calculateDistance(currentCoords.lat, currentCoords.lng, selectedPlace.lat, selectedPlace.lng);
+        console.log("Distance to location:", distance, "meters");
+        if (distance <= alertRadius) {
+            triggerAlert();
+        }
     }
 }
-function createMarker(coords, sort, colour, size) {
-    return new google.maps.Marker({ //this api system is depreciated by google, but will still work long after i submit my NEA
+
+function createMarker(coords, symbol, color, size) {
+    return new google.maps.Marker({
         map: map.innerMap,
         position: coords,
         icon: {
-            path: google.maps.SymbolPath[sort], //at first i was using thise code exclusively for the user location marker, then i repurposed it to be used system-wide
-            fillColor: colour,
+            path: google.maps.SymbolPath[symbol],
+            fillColor: color,
             fillOpacity: 1,
             strokeColor: "white",
             strokeWeight: 2,
@@ -120,14 +115,14 @@ function createMarker(coords, sort, colour, size) {
     });
 }
 
-function showError(error) { //this subroutine handles errors, modified version of w3schools example
+function showError(error) {
     let errorMessage = " ";
     switch (error.code) {
         case error.PERMISSION_DENIED: 
             errorMessage = "Location access denied.";
             break;
         case error.POSITION_UNAVAILABLE:
-            errorMessage = "Your Location is unavailable.";
+            errorMessage = "Your location is unavailable.";
             break;
         case error.TIMEOUT: 
             errorMessage = "Location request timed out.";
@@ -135,44 +130,52 @@ function showError(error) { //this subroutine handles errors, modified version o
         default:
             errorMessage = "Error getting location.";
     }
-    document.getElementById("setLocation").innerHTML=errorMessage;
+    document.getElementById("setLocation").innerHTML = errorMessage;
 }
 
-async function startup() { //this subroutine happens at the start to initialise the main stuff
-    await customElements.whenDefined('gmp-map'); //helps stop issue where map dosent show up properly
+async function startup() {
+    await customElements.whenDefined('gmp-map'); // ensures map element is defined
     map = document.querySelector("gmp-map");
     const placePicker = document.getElementById("place-picker");
-    infowindow = new google.maps.InfoWindow(); //initialising info window earlier on, keeps code simpler
+    infoWindow = new google.maps.InfoWindow();
+
+    // Update the location IDs
+    coords1 = document.getElementById("coords1");
+    coords2 = document.getElementById("coords2");
+    coords3 = document.getElementById("coords3");
+    coords4 = document.getElementById("coords4");
+    coords5 = document.getElementById("coords5");
+
+    location1 = document.getElementById("location1");
+    location2 = document.getElementById("location2");
+    location3 = document.getElementById("location3");
+    location4 = document.getElementById("location4");
+    location5 = document.getElementById("location5");
 
     // Place Picker Event Listener
-    placePicker.addEventListener('gmpx-placechange', function ()
-	{
+    placePicker.addEventListener('gmpx-placechange', function () {
         const place = placePicker.value;
-
-		console.log("Selected place object:", place);
+        console.log("Selected place object:", place);
         if (!place || !place.location) {
-            window.alert("No details available for input:"+ place.name);
-            infowindow.close();
-			if (marker) marker.setPosition(null);
+            window.alert("No details available for input:" + place.name);
+            infoWindow.close();
+            if (marker) marker.setPosition(null);
             if (circle) circle.setMap(null);
             return;
         }
 
+        // When a place is selected from the search, show its info window.
         map.center = place.location;
-        if(marker == null || marker == undefined)
-        {
-            marker = createMarker(place.location, 'CIRCLE', 'red', 7)
-        }
-        else 
-        {
-            marker.setPosition(place.location)
+        if (marker == null || marker == undefined) {
+            marker = createMarker(place.location, 'CIRCLE', 'red', 7);
+        } else {
+            marker.setPosition(place.location);
         }
         
-        //turns location into readbale adress for info box
         const addressParts = place.formattedAddress.split(', ');
         const shortAddress = addressParts.length > 2 ? `${addressParts[1]}, ${addressParts[2]}` : place.formattedAddress;
-        infowindow.setContent(`<div><strong>${place.displayName}</strong><br>${shortAddress}</div>`);
-        infowindow.open(map.innerMap, marker);
+        infoWindow.setContent(`<div><strong>${place.displayName}</strong><br>${shortAddress}</div>`);
+        infoWindow.open(map.innerMap, marker);
         map.innerMap.setZoom(20);
 
         selectedPlace = {
@@ -183,16 +186,14 @@ async function startup() { //this subroutine happens at the start to initialise 
         };
 
         const radiusInput = document.getElementById("radius-input");
-        const radiusValue = parseInt(radiusInput.value); //I struggled initially with the circle not updating since i accidentally used an un-defined variable. I then realised i needed to use radiusValue consistently
-        console.log("Your radius input value:", radiusInput.value); 
-        console.log("The parsed radius value:", radiusValue); 
+        const radiusValue = parseInt(radiusInput.value);
+        console.log("Radius input:", radiusInput.value, "Parsed radius:", radiusValue);
 
-        if (circle) 
-		{
+        if (circle) {
             circle.setMap(null);
         }
         circle = new google.maps.Circle({
-            map: null,
+            map: null, // do not display circle immediately for favorites
             radius: radiusValue,
             fillColor: '#32CD32',
             fillOpacity: 0.25,
@@ -204,58 +205,130 @@ async function startup() { //this subroutine happens at the start to initialise 
     });
 
     const setLocationBtn = document.getElementById("setLocation");
+    const favouriteLocationBtn = document.getElementById("save");
+    const uploadFavouritesBtn = document.getElementById("upload");
+    const saveFavouriteBtn = document.getElementById("fav");
+    const selectBtn1 = document.getElementById("selected1");
+    const selectBtn2 = document.getElementById("selected2");
+    const selectBtn3 = document.getElementById("selected3");
+    const selectBtn4 = document.getElementById("selected4");
+    const selectBtn5 = document.getElementById("selected5");
+
+    uploadFavouritesBtn.addEventListener('click', () => {});
+    saveFavouriteBtn.addEventListener('click', () => {});
 
     setLocationBtn.addEventListener('click', () => {
-        if (watchId !== null) { //if location being tracked
+        if (watchId !== null) { // if location tracking is active, stop it
             navigator.geolocation.clearWatch(watchId);
             watchId = null;
-            setLocationText.style.display = "inline";
-            locationTrackingButtonText.style.display = "none";
-
-            //if (userLocationMarker) userLocationMarker.setMap(null);  //this was creating an issue where when i set another location, my original marker would disapear
-            if (circle) 
-            {
+            if (circle) {
                 circle.setMap(null);
             }
-        } else { //if location not being tracked
-            if (selectedPlace) 
-            {
-
+        } else { // create a circle based on the selected favorite
+            if (selectedPlace) {
                 const radiusInput = document.getElementById("radius-input");
                 const radiusValue = parseInt(radiusInput.value);
                 const newRadius = isNaN(radiusValue) ? 100 : radiusValue;
                 
-                if (circle) 
-                {
-                    circle.setRadius(newRadius);
-                    circle.setMap(map.innerMap);
-                } 
-                else 
-                {
-                    circle = new google.maps.Circle(
-                    {
-                        map: map.innerMap,
-                        radius: newRadius,
-                        fillColor: '#FF0000',
-                        fillOpacity: 0.35,
-                        strokeColor: '#FFFFFF',
-                        strokeOpacity: 0.6,
-                        strokeWeight: 2,
-                        center: { lat: selectedPlace.lat, lng: selectedPlace.lng }
-                    });
+                // Always remove any existing circle before creating a new one
+                if (circle) {
+                    circle.setMap(null);
                 }
-                console.log("Updated Circle Radius:", newRadius);
+                circle = new google.maps.Circle({
+                    map: map.innerMap,
+                    radius: newRadius,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35,
+                    strokeColor: '#FFFFFF',
+                    strokeOpacity: 0.6,
+                    strokeWeight: 2,
+                    center: { lat: selectedPlace.lat, lng: selectedPlace.lng }
+                });
+                console.log("Created circle with radius:", newRadius);
                 alert(`Your location has been set to '${selectedPlace.name}'.`);
             }
-
             getLocation();
         }
-        // At the end of the place picker event listener:
     });
 
-    //bellow is the maths required to calculate distance
+    favouriteLocationBtn.addEventListener("click", () => {
+        if (location1.innerText.trim() === "") {
+            location1.innerHTML = selectedPlace.name;
+            coords1.innerHTML = selectedPlace.lat + "," + selectedPlace.lng;
+            console.log("Saved location:", location1.innerText);
+        } else if (location2.innerText.trim() === "") {
+            location2.innerHTML = selectedPlace.name;
+            coords2.innerHTML = selectedPlace.lat + "," + selectedPlace.lng;
+            console.log("Saved location:", location2.innerText);
+        } else if (location3.innerText.trim() === "") {
+            location3.innerHTML = selectedPlace.name;
+            coords3.innerHTML = selectedPlace.lat + "," + selectedPlace.lng;
+            console.log("Saved location:", location3.innerText);
+        } else if (location4.innerText.trim() === "") {
+            location4.innerHTML = selectedPlace.name;
+            coords4.innerHTML = selectedPlace.lat + "," + selectedPlace.lng;
+            console.log("Saved location:", location4.innerText);
+        } else if (location5.innerText.trim() === "") {
+            location5.innerHTML = selectedPlace.name;
+            coords5.innerHTML = selectedPlace.lat + "," + selectedPlace.lng;
+            console.log("Saved location:", location5.innerText);
+        } else {
+            alert("Location saves are full! Please refresh and start a new save or upload a different one with spare.");
+        }
+    });
 
     
+    function handleFavoriteSelection(favName, coordsField) {
+        const coordsValue = coordsField.textContent.trim();
+        const [lat, lng] = coordsValue.split(",").map(Number);
+        if (isNaN(lat) || isNaN(lng)) {
+            console.error("Invalid coordinates in", coordsField.id);
+            return;
+        }
+        const latLng = new google.maps.LatLng(lat, lng);
+
+        // Close any open info window
+        if (infoWindow) {
+            infoWindow.close();
+        }
+
+        // Remove existing circle and marker
+        if (circle) {
+            circle.setMap(null);
+            circle = null;
+        }
+        if (marker) {
+            marker.setMap(null);
+            marker = null;
+        }
+
+        // Place a red marker at the favorite location
+        marker = createMarker(latLng, 'CIRCLE', 'red', 7);
+        map.innerMap.setCenter(latLng);
+
+        // Update the selectedPlace object
+        selectedPlace = {
+            name: favName,
+            lat: lat,
+            lng: lng
+        };
+    }
+
+    selectBtn1.addEventListener("click", () => {
+        handleFavoriteSelection("Favourite 1", coords1);
+    });
+    selectBtn2.addEventListener("click", () => {
+        handleFavoriteSelection("Favourite 2", coords2);
+    });
+    selectBtn3.addEventListener("click", () => {
+        handleFavoriteSelection("Favourite 3", coords3);
+    });
+    selectBtn4.addEventListener("click", () => {
+        handleFavoriteSelection("Favourite 4", coords4);
+    });
+    selectBtn5.addEventListener("click", () => {
+        handleFavoriteSelection("Favourite 5", coords5);
+    });
 }
 
 document.addEventListener('DOMContentLoaded', startup);
