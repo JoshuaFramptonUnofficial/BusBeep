@@ -2,23 +2,23 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BusBeep - Bus Stop Tracker App</title>
+    <title>BusBeep - Bus Stop Tracker App</title> 
     <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library"></script>
     <gmpx-api-loader key="AIzaSyDnFUPIUS-LBe6a5AeEmbCENx56DPr44Mw" solution-channel="GMP_CCS_autocomplete_v4"></gmpx-api-loader>
     <link rel="stylesheet" href="styles.css">
-	<link rel="icon" href="Icon.ico">
+    <link rel="icon" href="Icon.ico">
     <script src="mainScript.js"></script>
 </head>
 <body>
-    <img id="logo" src="Logo.png" style="width:30%;"> <!--Bus Beep Logo, designed in photoshop-->
+    <img id="logo" src="Logo.png" alt="BusBeep Logo">
     <hr>
     <p>Use the area below to find a bus-stop you want to track</p>
     <hr>
 
-    <!-- Map container -->
+    <!-- Map container with forced satellite view -->
     <gmp-map id="map" center="53.79951032401113, -1.5480014734824878" zoom="13" map-id="DEMO_MAP_ID">
         <div slot="control-block-start-inline-start" class="pac-card" id="pac-card">
-            <div> <!--Box with Main Functionality (Set, Upload, Export, Favourite)-->
+            <div>
                 <div id="title">Location Search</div> 
                 <gmpx-place-picker id="place-picker" for-map="map"></gmpx-place-picker>
                 <div id="radius-input-container">
@@ -26,6 +26,7 @@
                     <input type="number" id="radius-input" value="300">
                     <button id="favourite">💾</button>
                 </div>
+                <!--Main Buttons-->
                 <button type="button" id="setLocation">Toggle Tracking</button>    
                 <button type="button" id="download">Save Favourites</button>
                 <button type="button" id="import">Upload Favourites</button>
@@ -34,8 +35,8 @@
         <gmp-advanced-marker id="marker"></gmp-advanced-marker>
     </gmp-map>
     
-	<!-- Table for favourites and set buttons-->
-	<table>
+    <!-- Table for favourites and set buttons-->
+    <table>
         <tr>
             <th scope="col">Name</th>
             <th scope="col">Location</th>
@@ -67,5 +68,29 @@
             <td><button type="button" id="selected5">Select</button></td>
         </tr>
     </table>
+
+    <!-- Inline script to force satellite view and disable unwanted controls -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapElement = document.getElementById('map');
+            // Listen for the 'map-ready' event from the gmp-map component
+            mapElement.addEventListener('map-ready', function(event) {
+                const map = event.detail.map;
+                // Update map options: remove fullscreen, streetview, and map type controls; force satellite view
+                map.setOptions({
+                    fullscreenControl: false,
+                    streetViewControl: false,
+                    mapTypeControl: false,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+                });
+                // In case the map tries to change type, force it back to satellite
+                google.maps.event.addListener(map, 'maptypeid_changed', function() {
+                    if (map.getMapTypeId() !== google.maps.MapTypeId.SATELLITE) {
+                        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
