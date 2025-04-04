@@ -14,12 +14,10 @@
     <hr>
     <p>Use the area below to find a bus-stop you want to track</p>
     <hr>
-
-    <!-- Map container with forced satellite view -->
+    <!--Map box containing all the locations and search box-->
     <gmp-map id="map" center="53.79951032401113, -1.5480014734824878" zoom="13" map-id="DEMO_MAP_ID">
         <div slot="control-block-start-inline-start" class="pac-card" id="pac-card">
             <div>
-                <div id="title">Location Search</div> 
                 <gmpx-place-picker id="place-picker" for-map="map"></gmpx-place-picker>
                 <div id="radius-input-container">
                     <label for="radius-input" id="radius-input-label">Radius (m):</label>
@@ -68,29 +66,5 @@
             <td><button type="button" id="selected5">Select</button></td>
         </tr>
     </table>
-
-    <!-- Inline script to force satellite view and disable unwanted controls -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const mapElement = document.getElementById('map');
-            // Listen for the 'map-ready' event from the gmp-map component
-            mapElement.addEventListener('map-ready', function(event) {
-                const map = event.detail.map;
-                // Update map options: remove fullscreen, streetview, and map type controls; force satellite view
-                map.setOptions({
-                    fullscreenControl: false,
-                    streetViewControl: false,
-                    mapTypeControl: false,
-                    mapTypeId: google.maps.MapTypeId.SATELLITE
-                });
-                // In case the map tries to change type, force it back to satellite
-                google.maps.event.addListener(map, 'maptypeid_changed', function() {
-                    if (map.getMapTypeId() !== google.maps.MapTypeId.SATELLITE) {
-                        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>

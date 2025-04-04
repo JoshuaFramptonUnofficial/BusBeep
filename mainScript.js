@@ -1,5 +1,7 @@
 // I have documented the following code to help whoever is reading this understand my thought process
+// Debugging elements such as "console.log" in place to help me find issues - no functionality from this
 
+// Basic objects and variables
 let marker;           
 let userLocationMarker;  
 let circle;              
@@ -10,7 +12,7 @@ let selectedPlace = null;
 // Global favorites list (array of favorite objects)
 let favoritesList = [];
 
-// The location rows in the table
+// The location rows in the html table
 let location1;
 let location2;
 let location3;
@@ -22,13 +24,14 @@ let coords3;
 let coords4;
 let coords5;
 
-//simple mathematical conversion to radians from degrees
+// Simple mathematical conversion to radians from degrees
 function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
 
+// Function using the haversine formula to calculate the users distance to the location selected
 function calculateDistance(latitude1, longitude1, latitude2, longitude2) { 
-    const earthRadius = 6371000; // Earth's radius in meters
+    const earthRadius = 6371000;
     const phi1 = toRadians(latitude1);
     const phi2 = toRadians(latitude2);
     const changePhi = toRadians(latitude2 - latitude1);
@@ -40,18 +43,19 @@ function calculateDistance(latitude1, longitude1, latitude2, longitude2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = earthRadius * c; // Distance in meters
     if (distance > 6371000) {
-        console.log("Error present with location converter");
+        console.log("Error with location converter"); 
     }
     return distance;
 }
 
+// Simple function to play audio when arriving at the location
 function triggerAlert() {
     let alertSound = new Audio('audio.mp3');
     alertSound.play();
 }
 
+// Simple function to track the users location asynchronously 
 function getLocation() { 
-    // Check if the browser supports geolocation
     if (navigator.geolocation) {
         if (watchId !== null) {
             navigator.geolocation.clearWatch(watchId); // Clear any existing watch
@@ -59,7 +63,7 @@ function getLocation() {
         watchId = navigator.geolocation.watchPosition(showPosition, showError, {
             enableHighAccuracy: true, 
             maximumAge: 2000, 
-            timeout: 5000 // Balance between accuracy and performance
+            timeout: 5000 
         });
     } else {
         document.getElementById("setLocation").innerHTML = 
@@ -67,6 +71,7 @@ function getLocation() {
     }
 }
 
+// Displays the users position and detects when they arrive to alert them
 function showPosition(position) {
     const radiusInput = document.getElementById("radius-input");
     const alertRadius = parseInt(radiusInput.value);
@@ -93,6 +98,8 @@ function showPosition(position) {
     }
 }
 
+// Simple function to create a marker with the google maps API
+// Used for the users location & selected location
 function createMarker(coords, symbol, color, size) {
     return new google.maps.Marker({
         map: map.innerMap,
@@ -108,6 +115,7 @@ function createMarker(coords, symbol, color, size) {
     });
 }
 
+// Error catching function inspired by example on W3Schools Geolocation API page
 function showError(error) {
     let errorMessage = " ";
     switch (error.code) {
@@ -126,6 +134,7 @@ function showError(error) {
     document.getElementById("setLocation").innerHTML = errorMessage;
 }
 
+// Intial function to setup API and initialise variables etc
 async function startup() {
     await customElements.whenDefined('gmp-map'); // Ensure map element is defined
     map = document.querySelector("gmp-map");
@@ -177,7 +186,6 @@ async function startup() {
         }
         
         const addressParts = place.formattedAddress.split(', ');
-        const shortAddress = addressParts.length > 2 ? `${addressParts[1]}, ${addressParts[2]}` : place.formattedAddress;
         map.innerMap.setZoom(20);
 
         selectedPlace = {
@@ -191,14 +199,14 @@ async function startup() {
         const radiusValue = parseInt(radiusInput.value);
         console.log("Radius input:", radiusInput.value, "Parsed radius:", radiusValue);
 
-        // Prepare a circle (do not display it yet)
+        // Prepare a circle (not displayed unless user starts tracking)
         if (circle) {
             circle.setMap(null);
         }
         circle = new google.maps.Circle({
             map: null,
             radius: radiusValue,
-            fillColor: '#32CD32',
+            fillColor: '#34ebe5',
             fillOpacity: 0.25,
             strokeColor: '#FFFFFF',
             strokeOpacity: 0.6,
@@ -207,7 +215,7 @@ async function startup() {
         });
     });
 
-    // "Add Favourite" button: adds the currently selected location to the favorites table and list.
+    // Add favourite button, allowing the user to create a list of favourite locations and export/import them
     addFavouriteBtn.addEventListener("click", () => {
         if (!selectedPlace) {
             alert("No location selected to add as favourite.");
@@ -243,21 +251,21 @@ async function startup() {
         }
     });
 
-    // "Export Favorites" button: triggered by the "upload favourites" button (as per new mapping)
+    // Exports the favourites as a Json file to be imported again later
     exportFavoritesBtn.addEventListener("click", exportFavorites);
 
-    // "Import Favorites" button: triggered by the "save favourites" button
+    // Imports the favoruties Json file to be read
     importFavoritesBtn.addEventListener("click", importFavorites);
 
-    // "Toggle Tracking" (Set Location) button: creates a circle around the currently selected location.
+    // Starts the tracking of the users location, and enables the alert system for when the user arrives
     setLocationBtn.addEventListener('click', () => {
-        if (watchId !== null) { // If location tracking is active, stop it
+        if (watchId !== null) { 
             navigator.geolocation.clearWatch(watchId);
             watchId = null;
             if (circle) {
                 circle.setMap(null);
             }
-        } else { // Create a circle based on the selected location
+        } else {
             if (selectedPlace) {
                 const radiusInput = document.getElementById("radius-input");
                 const radiusValue = parseInt(radiusInput.value);
@@ -269,7 +277,7 @@ async function startup() {
                 circle = new google.maps.Circle({
                     map: map.innerMap,
                     radius: newRadius,
-                    fillColor: '#FF0000',
+                    fillColor: '#34ebe5',
                     fillOpacity: 0.35,
                     strokeColor: '#FFFFFF',
                     strokeOpacity: 0.6,
@@ -328,10 +336,8 @@ async function startup() {
     selectBtn5.addEventListener("click", () => { handleFavoriteSelection("Favourite 5", coords5); });
 }
 
-// ------------------ Export and Import Functions ------------------
-
+// Exports the favourites list as Json
 function exportFavorites() {
-    // Create an export object with a comment and the current favorites list.
     const exportData = {
         comment: "DO NOT MODIFY THIS FILE MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING",
         favorites: favoritesList
@@ -349,7 +355,7 @@ function exportFavorites() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
-
+// Imports the Favourites Json list
 function importFavorites() {
     // Create a hidden file input element
     const fileInput = document.createElement("input");
@@ -379,6 +385,7 @@ function importFavorites() {
     fileInput.click();
 }
 
+//Used by importFavourites() to update the table in HTML to show the saved locations
 function updateFavoritesTable() {
     // Update the table cells from the global favoritesList.
     const locations = [location1, location2, location3, location4, location5];

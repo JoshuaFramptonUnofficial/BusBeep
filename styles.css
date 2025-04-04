@@ -1,69 +1,22 @@
-/* Overall page styling for dark mode */
 html, body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #121212; /* Dark background */
-    color: #e0e0e0; /* Light text */
+    background-color: #121212;
+    color: #e0e0e0;
     font-family: Verdana, sans-serif;
 }
 
-/* BusBeep Logo styling */
-#logo {
-    width: 50%;
-    display: block;
-    margin: 0 auto;
-}
 
-/* Paragraph text styling */
 p {
     margin: 1rem;
 }
 
-/* Map container styling remains similar */
 gmp-map {
     height: 500px;
 }
 
-/* Search & radius card styling updated for dark mode and transparency */
-.pac-card {
-    background-color: rgba(30, 30, 30, 0.8); /* Dark background with opacity */
-    border-radius: 2px;
-    box-shadow: 0 1px 4px -1px rgba(255, 255, 255, 0.1);
-    margin: 10px;
-    font: 400 18px Roboto, Arial, sans-serif;
-    overflow: hidden;
-}
-
-/* Title styling updated for dark mode */
-#title {
-    color: #ffffff; /* White text */
-    background-color: #333333;
-    font-size: 25px;
-    font-weight: 500;
-    padding: 6px 12px;
-}
-
-/* Place picker and radius input styling */
-#place-picker {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 0.5rem 1rem 1rem;
-}
-#radius-input-container {
-    display: flex;
-    align-items: center;
-    padding: 0 1rem 1rem;
-}
-#radius-input-label {
-    margin-right: 0.5rem;
-}
-#radius-input {
-    width: 50px;
-}
-
-/* Button styling updated for dark mode */
 button {
     background-color: #00ebf7;
     font-family: Verdana, sans-serif;
@@ -73,22 +26,89 @@ button {
     cursor: pointer;
     border-radius: 4px;
 }
+
 button:hover {
     opacity: 0.9;
 }
 
-/* Table styling remains largely unchanged but with color adjustments */
 table {
     width: 90%;
     margin: 1rem auto;
     border-collapse: collapse;
 }
+
 th, td {
     padding: 0.5rem;
     border: 1px solid #333;
     text-align: center;
 }
+
 th {
     background-color: #333;
     color: #fff;
+}
+
+.pac-card {
+    background-color: rgba(30, 30, 30, 0.9); /* Updated opacity */
+    border-radius: 2px;
+    box-shadow: 0 1px 4px -1px rgba(255, 255, 255, 0.1);
+    margin: 10px;
+    font: 400 18px Roboto, Arial, sans-serif;
+    overflow: hidden;
+    /* Base width for larger screens, can be adjusted */
+    max-width: 350px; /* Added max-width for better control */
+    box-sizing: border-box; /* Ensure padding doesn't add to width */
+}
+
+#logo {
+    width: 50%;
+    display: block;
+    margin: 0 auto;
+}
+
+#title {
+    color: #ffffff;
+    background-color: #333333;
+    font-size: 25px;
+    font-weight: 500;
+    padding: 6px 12px;
+}
+
+#place-picker {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem 1rem 1rem;
+}
+
+#radius-input-container {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem 1rem;
+}
+
+#radius-input-label {
+    margin-right: 0.5rem;
+}
+
+#radius-input {
+    width: 50px;
+}
+
+
+/* Mobile Specific UI */
+@media (max-width: 600px) {
+    button {
+        padding: 0.4rem 0.8rem;
+        margin: 0.2rem;
+    }
+
+    .pac-card {
+        width: 90%;
+        max-width: none;
+        margin: 10px auto;
+    }
+
+    #logo {
+        width: 80%;
+    }
 }
